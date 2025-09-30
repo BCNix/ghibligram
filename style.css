@@ -1,0 +1,9 @@
+
+/* <weight>: 400 or 700 */
+/* <style>: normal or italic */
+
+body{
+    font-family: "Nunito", sans-serif;
+    font-weight: 400;
+    /* font-style: italic; */
+}
