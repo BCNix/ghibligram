@@ -10,16 +10,17 @@ html {
 }
 /* end box-sizing reset */
 
-/* <weight>: 400 or 700 */
+/* <weight>: 400, 600, 700 */
 /* <style>: normal or italic */
 
 body{
     font-family: "Nunito", sans-serif;
-    font-weight: 400;
     background-color: #F5F5F0;
     margin: 0;
     /* font-style: italic; */
 }
+
+/* Layout */
 
 header,
 main,
@@ -29,10 +30,43 @@ footer{
     padding: 10px;
 }
 
+.whisper-input-area{
+    display: flex;
+    align-self: flex-start;
+    gap: 10px;
+}
+
+footer{
+    color: #4c97b5;
+    text-align: center;
+    border-top: 2px solid #E8E8E8;
+}
+
+/* Typography & Icons */
+
 h1{
     color: #87CEEB;
     text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.3);
 }
+
+i{
+    cursor: pointer;
+}
+
+.liked{
+    color: #E67E7E;
+}
+
+.rewhisper{
+    color: #8FBC8F;
+}
+
+.fa-trash:hover{
+    color: #FFB347;
+}
+
+
+/* Profile images */
 
 .profile-pic{
     width: 60px;
@@ -41,12 +75,8 @@ h1{
     border: 1px solid lightgray;
 }
 
-.whisper-input-area{
-    display: flex;
-    align-self: flex-start;
-    gap: 15px;
-}
 
+/* Textarea & Button */
 
 textarea{
     width: 100%;
@@ -57,6 +87,7 @@ textarea{
     font-size: 1.25rem;
     margin-bottom: 20px;
     background-color: #F5F5F0;
+    color: #4A4A4A;
 }
 
 textarea:focus{
@@ -64,8 +95,6 @@ textarea:focus{
     border:2px solid #87CEEB;
     border-radius: 10px;
 }
-
-
 
 button {
     background: #87CEEB;
@@ -94,11 +123,51 @@ button:active {
 }
 
 
+/* Feed */
 
-
-
-
-footer{
-    color: #4c97b5;
-    text-align: center;
+.whisper{
+    border-top: 2px solid #E8E8E8;
+    margin: 20px 0;
+    padding-top: 25px;
 }
+
+.whisper-inner{
+    display: flex;
+    gap: 20px;
+    color: #4A4A4A;
+}
+
+.inner-container{
+    width: 250px;
+}
+
+.handle{
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.whisper-text{
+    line-height: 1.4;
+}
+
+.whisper-details{
+    display: flex;
+    width: 170px;
+    justify-content: space-between;
+}
+
+/* Replies */
+
+.whisper-reply{
+    border-top: 2px solid #E8E8E8;
+    margin: 10px 0 10px 60px;
+    padding-top: 25px;
+    
+}
+
+/* Utility Class */
+
+.hidden{
+    display: none;
+}
+
