@@ -2,11 +2,12 @@ import { whispersData } from './data.js'
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 
 
+let openReplies = new Set()
+
+
 document.addEventListener('click', function(e){
-    // console.log(e.target.dataset.reply)
     if(e.target.dataset.like){
         handleLikeClick(e.target.dataset.like)
-        // console.log(document.getElementById(`like-${e.target.dataset.like}`).classList)
     }
     else if(e.target.dataset.rewhisper){
         handleRewhisperClick(e.target.dataset.rewhisper)
@@ -55,6 +56,13 @@ function handleRewhisperClick(rewhisperId) {
 
 function handleReplyClick(replyId){
     document.getElementById(`reply-${replyId}`).classList.toggle('hidden')
+
+    if(openReplies.has(replyId)){
+        openReplies.delete(replyId)
+    }
+    else{
+        openReplies.add(replyId)
+    }
 }
 
 
@@ -67,6 +75,7 @@ function getFeed(){
         let likeIconClass = ''
         let rewhisperedIconClass = ''
         let repliesHtml = ''
+        let replyClass = 'hidden'
 
         if(whisper.isliked){
             likeIconClass = 'liked' 
@@ -74,6 +83,10 @@ function getFeed(){
 
         if(whisper.isRewhispered){
             rewhisperedIconClass = 'rewhispered'
+        }
+
+        if(openReplies.has(whisper.uuid)){
+            replyClass = ''
         }
 
         if(whisper.replies.length > 0){
@@ -116,7 +129,7 @@ function getFeed(){
                                 </div>
                             </div>
                         </div>
-                        <div class="hidden" id="reply-${whisper.uuid}">
+                        <div class="${replyClass}" id="reply-${whisper.uuid}">
                             <!-- Reply goes here! -->         
                             ${repliesHtml}
                         </div>
