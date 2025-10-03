@@ -4,23 +4,57 @@ import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 
 document.addEventListener('click', function(e){
     // console.log(e.target.dataset.reply)
-    // console.log(e.target.dataset.rewhisper)
+    if(e.target.dataset.like){
+        handleLikeClick(e.target.dataset.like)
+        // console.log(document.getElementById(`like-${e.target.dataset.like}`).classList)
+    }
+    else if(e.target.dataset.rewhisper){
+        handleRewhisperClick(e.target.dataset.rewhisper)
+    }
 
-    handleLikeClick(e.target.dataset.like)
-    render()
+    else if(e.target.dataset.reply){
+        handleReplyClick(e.target.dataset.reply)
+    }
 })
 
-function handleLikeClick(uuid){
-    whispersData.forEach(function(whisper){
+function getWhisperObj(uuid){
+    return whispersData.filter(function(whisper){
+        return whisper.uuid === uuid})[0]
+}
 
+function handleLikeClick(likeId){
 
+    const targetLikeObj = getWhisperObj(likeId)
 
-        if(whisper.uuid === uuid){
-            
-            whisper.likes++
-        }
+    if(targetLikeObj.isliked){
+        targetLikeObj.likes--
+    }
+    else {
+        targetLikeObj.likes++
+    }
 
-    })
+    targetLikeObj.isliked = !targetLikeObj.isliked
+
+    render()
+}
+
+function handleRewhisperClick(rewhisperId) {
+    const targetRewhisperObj = getWhisperObj(rewhisperId)
+
+    if(targetRewhisperObj.isRewhispered){
+        targetRewhisperObj.rewhispers--
+    } 
+    else {
+        targetRewhisperObj.rewhispers++
+    }
+
+    targetRewhisperObj.isRewhispered = !targetRewhisperObj.isRewhispered
+
+    render()
+}
+
+function handleReplyClick(replyId){
+    document.getElementById(`reply-${replyId}`).classList.toggle('hidden')
 }
 
 
@@ -30,7 +64,17 @@ function getFeed(){
 
     whispersData.forEach(function(whisper){
 
+        let likeIconClass = ''
+        let rewhisperedIconClass = ''
         let repliesHtml = ''
+
+        if(whisper.isliked){
+            likeIconClass = 'liked' 
+        }
+
+        if(whisper.isRewhispered){
+            rewhisperedIconClass = 'rewhispered'
+        }
 
         if(whisper.replies.length > 0){
             whisper.replies.forEach(function(reply){
@@ -61,12 +105,12 @@ function getFeed(){
                                     </span>
 
                                     <span class="whisper-detail">
-                                        <i class="fa-solid fa-heart" data-like="${whisper.uuid}"></i>
+                                        <i class="fa-solid fa-heart ${likeIconClass}" data-like="${whisper.uuid}"></i>
                                         ${whisper.likes}
                                     </span>
 
                                     <span class="whisper-detail">
-                                        <i class="fa-solid fa-retweet data-rewhisper="${whisper.uuid}"></i>
+                                        <i class="fa-solid fa-retweet ${rewhisperedIconClass}" data-rewhisper="${whisper.uuid}"></i>
                                         ${whisper.rewhispers}
                                     </span>
                                 </div>

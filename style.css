@@ -45,8 +45,10 @@ footer{
 /* Typography & Icons */
 
 h1{
+    font-size: 2.5rem;
     color: #87CEEB;
     text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.3);
+    margin: 0;
 }
 
 i{
@@ -57,13 +59,13 @@ i{
     color: #E67E7E;
 }
 
-.rewhisper{
-    color: #8FBC8F;
+.rewhispered{
+    color: #66ca66;
 }
 
-.fa-trash:hover{
+/* .fa-trash:hover{
     color: #FFB347;
-}
+} */
 
 
 /* Profile images */
@@ -80,7 +82,6 @@ i{
 
 textarea{
     width: 100%;
-    height: 70px;
     padding: 15px;
     resize: none;
     border: none;
@@ -88,6 +89,7 @@ textarea{
     margin-bottom: 20px;
     background-color: #F5F5F0;
     color: #4A4A4A;
+    font-family: "Nunito", sans-serif;
 }
 
 textarea:focus{
@@ -110,6 +112,7 @@ button {
     cursor: pointer;
     position: relative;
     top: 0;
+    font-family: "Nunito", sans-serif;
 }
 
 button:hover {
@@ -167,7 +170,7 @@ button:active {
 
 /* Utility Class */
 
-/* .hidden{
+.hidden{
     display: none;
-} */
+}
 
