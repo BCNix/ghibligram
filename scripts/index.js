@@ -2,30 +2,51 @@ import { whispersData } from './data.js'
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 
 
-// console.log(uuidv4())
-
-
-// whispersData.forEach(function(whisper){
-//     console.log(whisper.handle)
-// })
-
-// Display each whisper on the screen
-// Display reply when clicking the message icon
-
-
-
-
 document.addEventListener('click', function(e){
-    console.log(e.target.dataset.reply)
-    console.log(e.target.dataset.like)
-    console.log(e.target.dataset.rewhisper)
+    // console.log(e.target.dataset.reply)
+    // console.log(e.target.dataset.rewhisper)
+
+    handleLikeClick(e.target.dataset.like)
+    render()
 })
+
+function handleLikeClick(uuid){
+    whispersData.forEach(function(whisper){
+
+
+
+        if(whisper.uuid === uuid){
+            
+            whisper.likes++
+        }
+
+    })
+}
 
 
 function getFeed(){
+
     let feedHtml = ''
 
     whispersData.forEach(function(whisper){
+
+        let repliesHtml = ''
+
+        if(whisper.replies.length > 0){
+            whisper.replies.forEach(function(reply){
+            repliesHtml += `<div class="whisper-reply">
+                            <div class="whisper-inner">
+                                <img src="${reply.profilePic}" class="profile-pic">
+                                <div>
+                                    <p class="handle">${reply.handle}</p>
+                                    <p class="whisper-text">${reply.whisperText}</p>
+                                </div>
+                            </div>
+                            </div>`
+            })
+        }
+        
+
         feedHtml += `<div class="whisper">
                         <div class="whisper-inner">
                             <img src="${whisper.profilePic}" class="profile-pic">
@@ -51,8 +72,9 @@ function getFeed(){
                                 </div>
                             </div>
                         </div>
-                        <div class="" id="reply-">
-                            <!-- Reply goes here! -->
+                        <div class="hidden" id="reply-${whisper.uuid}">
+                            <!-- Reply goes here! -->         
+                            ${repliesHtml}
                         </div>
                     </div>`
     })
@@ -67,7 +89,3 @@ function render(){
 
 
 render()
-
-
-
-
