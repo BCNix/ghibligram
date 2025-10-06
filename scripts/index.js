@@ -16,7 +16,37 @@ document.addEventListener('click', function(e){
     else if(e.target.dataset.reply){
         handleReplyClick(e.target.dataset.reply)
     }
+
+    if(e.target.id === 'whisper-btn'){
+        // let text = document.getElementById('whisper-input').value
+        // console.log(text)
+        whisper()
+    }
 })
+
+function whisper(){
+
+    let text = document.getElementById('whisper-input')
+
+    let newWhisper = {
+        handle: `@Seiji 🎻`,
+        profilePic: `images/seiji.jpeg`,
+        likes: 0,
+        rewhispers: 0,
+        whisperText: `${text.value}`,
+        replies: [],
+        isliked: false,
+        isRewhispered: false,
+        uuid: uuidv4()
+    }
+
+    if(text.value){
+        whispersData.unshift(newWhisper)
+        text.value = ''
+    }
+    render()
+    
+}
 
 function getWhisperObj(uuid){
     return whispersData.filter(function(whisper){
