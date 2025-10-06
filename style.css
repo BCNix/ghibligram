@@ -63,9 +63,9 @@ i{
     color: #66ca66;
 }
 
-/* .fa-trash:hover{
+.fa-trash:hover{
     color: #FFB347;
-} */
+}
 
 
 /* Profile images */
@@ -155,7 +155,7 @@ button:active {
 
 .whisper-details{
     display: flex;
-    width: 170px;
+    width: 200px;
     justify-content: space-between;
 }
 

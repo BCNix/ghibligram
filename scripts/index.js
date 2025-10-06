@@ -6,6 +6,11 @@ let openReplies = new Set()
 
 
 document.addEventListener('click', function(e){
+
+    if(e.target.id === 'whisper-btn'){
+        whisper()
+    }
+
     if(e.target.dataset.like){
         handleLikeClick(e.target.dataset.like)
     }
@@ -17,11 +22,10 @@ document.addEventListener('click', function(e){
         handleReplyClick(e.target.dataset.reply)
     }
 
-    if(e.target.id === 'whisper-btn'){
-        // let text = document.getElementById('whisper-input').value
-        // console.log(text)
-        whisper()
+    else if(e.target.dataset.trash){
+        removeWhisper(e.target.dataset.trash)
     }
+
 })
 
 function whisper(){
@@ -37,6 +41,7 @@ function whisper(){
         replies: [],
         isliked: false,
         isRewhispered: false,
+        isNewWhisper: true,
         uuid: uuidv4()
     }
 
@@ -48,7 +53,17 @@ function whisper(){
     
 }
 
+function removeWhisper(uuid){
+
+    const whisperIndex = whispersData.indexOf(getWhisperObj(uuid))
+
+    whispersData.splice(whisperIndex, 1)
+
+    render()
+}
+
 function getWhisperObj(uuid){
+    
     return whispersData.filter(function(whisper){
         return whisper.uuid === uuid})[0]
 }
@@ -106,6 +121,7 @@ function getFeed(){
         let rewhisperedIconClass = ''
         let repliesHtml = ''
         let replyClass = 'hidden'
+        let trashIcon = 'hidden'
 
         if(whisper.isliked){
             likeIconClass = 'liked' 
@@ -117,6 +133,10 @@ function getFeed(){
 
         if(openReplies.has(whisper.uuid)){
             replyClass = ''
+        }
+
+        if(whisper.isNewWhisper){
+            trashIcon = ''
         }
 
         if(whisper.replies.length > 0){
@@ -155,6 +175,10 @@ function getFeed(){
                                     <span class="whisper-detail">
                                         <i class="fa-solid fa-retweet ${rewhisperedIconClass}" data-rewhisper="${whisper.uuid}"></i>
                                         ${whisper.rewhispers}
+                                    </span>
+
+                                    <span class="whisper-detail ${trashIcon}">
+                                        <i class="fa-solid fa-trash" data-trash="${whisper.uuid}"></i>
                                     </span>
                                 </div>
                             </div>
