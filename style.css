@@ -11,13 +11,11 @@ html {
 /* end box-sizing reset */
 
 /* <weight>: 400, 600, 700 */
-/* <style>: normal or italic */
 
 body{
     font-family: "Nunito", sans-serif;
     background-color: #F5F5F0;
     margin: 0;
-    /* font-style: italic; */
 }
 
 /* Layout */
@@ -55,6 +53,10 @@ i{
     cursor: pointer;
 }
 
+i:hover{
+    transform: scale(1.2);
+}
+
 .liked{
     color: #E67E7E;
 }
@@ -66,7 +68,6 @@ i{
 .fa-trash:hover{
     color: #FFB347;
 }
-
 
 /* Profile images */
 
@@ -84,17 +85,26 @@ textarea{
     width: 100%;
     padding: 15px;
     resize: none;
-    border: none;
-    font-size: 1.25rem;
     margin-bottom: 20px;
     background-color: #F5F5F0;
+    border: 2px solid #87CEEB;
+    border-radius: 10px;
+    font-size: 1rem;
     color: #4A4A4A;
     font-family: "Nunito", sans-serif;
 }
 
 textarea:focus{
-    outline: none !important;
-    border:2px solid #87CEEB;
+    outline: none;
+}
+
+.whisper-input{
+    font-size: 1.25rem;
+    border: none;
+}
+
+.whisper-input:focus{
+    border: 2px solid #87CEEB;
     border-radius: 10px;
 }
 
@@ -125,6 +135,10 @@ button:active {
     top: 3px;
 }
 
+.reply-btn{
+    font-size: 1.2rem;
+}
+
 
 /* Feed */
 
@@ -150,12 +164,12 @@ button:active {
 }
 
 .whisper-text{
+    word-wrap: break-word;
     line-height: 1.4;
 }
 
 .whisper-details{
     display: flex;
-    width: 200px;
     justify-content: space-between;
 }
 

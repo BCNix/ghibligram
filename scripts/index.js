@@ -1,9 +1,6 @@
-import { whispersData } from './data.js'
-import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
-
+import { whispersData, createNewWhisper } from './data.js'
 
 let openReplies = new Set()
-
 
 document.addEventListener('click', function(e){
 
@@ -18,39 +15,50 @@ document.addEventListener('click', function(e){
         handleRewhisperClick(e.target.dataset.rewhisper)
     }
 
+    else if(e.target.dataset.trash){
+        removeWhisper(e.target.dataset.trash)
+    }
+
     else if(e.target.dataset.reply){
         handleReplyClick(e.target.dataset.reply)
     }
 
-    else if(e.target.dataset.trash){
-        removeWhisper(e.target.dataset.trash)
+    else if(e.target.dataset.comment){
+        whisperBack(e.target.dataset.comment)
     }
 
 })
 
 function whisper(){
 
-    let text = document.getElementById('whisper-input')
+    let textareaInput = document.getElementById('whisper-input')
 
-    let newWhisper = {
-        handle: `@Seiji 🎻`,
-        profilePic: `images/seiji.jpeg`,
-        likes: 0,
-        rewhispers: 0,
-        whisperText: `${text.value}`,
-        replies: [],
-        isliked: false,
-        isRewhispered: false,
-        isNewWhisper: true,
-        uuid: uuidv4()
-    }
+    const newWhisper = createNewWhisper(textareaInput.value)
 
-    if(text.value){
+    if(textareaInput.value){
         whispersData.unshift(newWhisper)
-        text.value = ''
+        textareaInput.value = ''
     }
     render()
     
+}
+
+function whisperBack(uuid){
+    let textareaInput = document.getElementById(`reply-input-${uuid}`)
+
+    const newWhisper = createNewWhisper(textareaInput.value)
+
+    if(textareaInput.value){
+        const replies = getWhisperObj(uuid).replies
+        replies.push(newWhisper)
+    }
+    render()
+}
+
+function getWhisperObj(uuid){
+    
+    return whispersData.filter(function(whisper){
+        return whisper.uuid === uuid})[0]
 }
 
 function removeWhisper(uuid){
@@ -60,12 +68,6 @@ function removeWhisper(uuid){
     whispersData.splice(whisperIndex, 1)
 
     render()
-}
-
-function getWhisperObj(uuid){
-    
-    return whispersData.filter(function(whisper){
-        return whisper.uuid === uuid})[0]
 }
 
 function handleLikeClick(likeId){
@@ -110,7 +112,6 @@ function handleReplyClick(replyId){
     }
 }
 
-
 function getFeed(){
 
     let feedHtml = ''
@@ -144,7 +145,7 @@ function getFeed(){
             repliesHtml += `<div class="whisper-reply">
                             <div class="whisper-inner">
                                 <img src="${reply.profilePic}" class="profile-pic">
-                                <div>
+                                <div class="inner-container">
                                     <p class="handle">${reply.handle}</p>
                                     <p class="whisper-text">${reply.whisperText}</p>
                                 </div>
@@ -153,7 +154,6 @@ function getFeed(){
             })
         }
         
-
         feedHtml += `<div class="whisper">
                         <div class="whisper-inner">
                             <img src="${whisper.profilePic}" class="profile-pic">
@@ -186,7 +186,12 @@ function getFeed(){
                         <div class="${replyClass}" id="reply-${whisper.uuid}">
                             <!-- Reply goes here! -->         
                             ${repliesHtml}
-                        </div>
+                            <div class="whisper-reply">
+                                <div class="whisper-inner whisper-input-area">
+                                    <textarea placeholder="Whisper back..." id="reply-input-${whisper.uuid}" class"reply-input"></textarea>
+                                </div>
+                                <button id="reply-btn" data-comment="${whisper.uuid}">Reply</button>
+                            </div>
                     </div>`
     })
 
