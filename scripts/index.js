@@ -19,6 +19,10 @@ document.addEventListener('click', function(e){
         removeWhisper(e.target.dataset.trash)
     }
 
+    else if(e.target.dataset.trashreply){
+        removeWhisperReply(e.target.dataset.trashreply)
+    }
+
     else if(e.target.dataset.reply){
         handleReplyClick(e.target.dataset.reply)
     }
@@ -26,6 +30,9 @@ document.addEventListener('click', function(e){
     else if(e.target.dataset.comment){
         whisperBack(e.target.dataset.comment)
     }
+
+
+    console.log(e)
 
 })
 
@@ -48,6 +55,8 @@ function whisperBack(uuid){
 
     const newWhisper = createNewWhisper(textareaInput.value)
 
+    newWhisper['hasReply'] = true
+
     if(textareaInput.value){
         const replies = getWhisperObj(uuid).replies
         replies.push(newWhisper)
@@ -68,6 +77,18 @@ function removeWhisper(uuid){
     whispersData.splice(whisperIndex, 1)
 
     render()
+}
+
+function removeWhisperReply(uuid){
+    const whisperReplyArr= getWhisperObj(uuid).replies
+    const replyArr = whisperReplyArr.filter((reply) => reply.uuid === uuid)
+
+    const replyIndex = whisperReplyArr.indexOf(replyArr)
+
+    whisperReplyArr.splice(replyIndex, 1)
+
+    render()
+
 }
 
 function handleLikeClick(likeId){
@@ -148,6 +169,9 @@ function getFeed(){
                                 <div class="inner-container">
                                     <p class="handle">${reply.handle}</p>
                                     <p class="whisper-text">${reply.whisperText}</p>
+                                    <span class="whisper-detail ${reply.hasReply ? '' : 'hidden'}">
+                                        <i class="fa-solid fa-trash" data-trashReply="${whisper.uuid}"></i>
+                                    </span>
                                 </div>
                             </div>
                             </div>`
