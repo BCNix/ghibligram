@@ -20,7 +20,7 @@ document.addEventListener('click', function(e){
     }
 
     else if(e.target.dataset.trashreply){
-        removeWhisperReply(e.target.dataset.trashreply)
+        removeWhisperReply(e.target.dataset.trashwhisper, e.target.dataset.trashreply)
     }
 
     else if(e.target.dataset.reply){
@@ -30,10 +30,6 @@ document.addEventListener('click', function(e){
     else if(e.target.dataset.comment){
         whisperBack(e.target.dataset.comment)
     }
-
-
-    console.log(e)
-
 })
 
 function whisper(){
@@ -79,11 +75,12 @@ function removeWhisper(uuid){
     render()
 }
 
-function removeWhisperReply(uuid){
+function removeWhisperReply(uuid, replyUUID){
     const whisperReplyArr= getWhisperObj(uuid).replies
-    const replyArr = whisperReplyArr.filter((reply) => reply.uuid === uuid)
+    
+    const replyObj = whisperReplyArr.filter((reply) => replyUUID === reply.uuid)[0]
 
-    const replyIndex = whisperReplyArr.indexOf(replyArr)
+    const replyIndex = whisperReplyArr.indexOf(replyObj)
 
     whisperReplyArr.splice(replyIndex, 1)
 
@@ -170,7 +167,7 @@ function getFeed(){
                                     <p class="handle">${reply.handle}</p>
                                     <p class="whisper-text">${reply.whisperText}</p>
                                     <span class="whisper-detail ${reply.hasReply ? '' : 'hidden'}">
-                                        <i class="fa-solid fa-trash" data-trashReply="${whisper.uuid}"></i>
+                                        <i class="fa-solid fa-trash" data-trashWhisper="${whisper.uuid}" data-trashReply="${reply.uuid}"></i>
                                     </span>
                                 </div>
                             </div>
