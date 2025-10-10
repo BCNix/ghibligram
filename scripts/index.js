@@ -1,6 +1,45 @@
-import { whispersData, createNewWhisper } from './data.js'
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js"
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js'
+import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js"
+import { createNewWhisper } from './data.js'
 
+const firebaseConfig = {
+    apiKey: "AIzaSyB8qm44xhGJozRCf-aBBk7dswlDBoSRWBk",
+    authDomain: "ghibligram-af0cd.firebaseapp.com",
+    databaseURL: "https://ghibligram-af0cd-default-rtdb.firebaseio.com",
+    projectId: "ghibligram-af0cd",
+    storageBucket: "ghibligram-af0cd.firebasestorage.app",
+    messagingSenderId: "473122165873",
+    appId: "1:473122165873:web:92a41076a4ed6e39daf7d0"
+}
+
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const database = getDatabase(app)
+const whispersRef = ref(database, "whispers")
 let openReplies = new Set()
+let whispersDataLocal = [] // Local copy for rendering
+
+signInAnonymously(auth)
+    .catch(error => {
+        console.log('Authentication error:', error)
+    })
+
+onAuthStateChanged(auth, user => {
+    if(user){
+        console.log("Authenticated! User ID:", user.uid)
+        
+        // Listen for real-time updates
+        onValue(whispersRef, (snapshot) => {
+            if(snapshot.exists()){
+                const data = snapshot.val()
+                whispersDataLocal = Object.values(data)
+                whispersDataLocal.sort((a,b) => b.timestamp - a.timestamp)
+                render()
+            }
+        })
+    }
+})
 
 document.addEventListener('click', function(e){
 
@@ -28,95 +67,89 @@ document.addEventListener('click', function(e){
     }
 
     else if(e.target.dataset.comment){
-        whisperBack(e.target.dataset.comment)
+        reply(e.target.dataset.comment)
     }
+
 })
+
+function getWhisperObj(uuid){
+    
+    return whispersDataLocal.find(whisper => whisper.uuid === uuid)
+}
 
 function whisper(){
 
     let textareaInput = document.getElementById('whisper-input')
 
-    const newWhisper = createNewWhisper(textareaInput.value)
-
     if(textareaInput.value){
-        whispersData.unshift(newWhisper)
+        const newWhisper = createNewWhisper(textareaInput.value)
+        newWhisper.timestamp = Date.now()
+        const newWhisperRef = ref(database, `whispers/${newWhisper.uuid}`)
+
+        set(newWhisperRef, newWhisper)
+
         textareaInput.value = ''
     }
-    render()
-    
 }
 
-function whisperBack(uuid){
+function reply(uuid){
     let textareaInput = document.getElementById(`reply-input-${uuid}`)
 
-    const newWhisper = createNewWhisper(textareaInput.value)
-
-    newWhisper['hasReply'] = true
-
     if(textareaInput.value){
-        const replies = getWhisperObj(uuid).replies
-        replies.push(newWhisper)
+        const newWhisper = createNewWhisper(textareaInput.value)
+        newWhisper.hasReply = true
+        const whisperObj = getWhisperObj(uuid)
+        const updatedReplies = whisperObj.replies ? [...whisperObj.replies, newWhisper] : [newWhisper]
+
+        update(ref(database, `whispers/${uuid}`), {
+            replies: updatedReplies
+        })
     }
-    render()
 }
 
-function getWhisperObj(uuid){
-    
-    return whispersData.filter(function(whisper){
-        return whisper.uuid === uuid})[0]
-}
 
 function removeWhisper(uuid){
 
-    const whisperIndex = whispersData.indexOf(getWhisperObj(uuid))
-
-    whispersData.splice(whisperIndex, 1)
-
-    render()
+    remove(ref(database, `whispers/${uuid}`))
 }
 
 function removeWhisperReply(uuid, replyUUID){
-    const whisperReplyArr= getWhisperObj(uuid).replies
-    
-    const replyObj = whisperReplyArr.filter((reply) => replyUUID === reply.uuid)[0]
+    const whisperObj= getWhisperObj(uuid)
 
-    const replyIndex = whisperReplyArr.indexOf(replyObj)
+    if(whisperObj.replies){
+        const updatedReplies = whisperObj.replies.filter(reply => reply.uuid !== replyUUID)
 
-    whisperReplyArr.splice(replyIndex, 1)
-
-    render()
-
+        update(ref(database, `whispers/${uuid}`), {
+            replies: updatedReplies
+        })
+    }
 }
 
 function handleLikeClick(likeId){
 
     const targetLikeObj = getWhisperObj(likeId)
 
-    if(targetLikeObj.isliked){
-        targetLikeObj.likes--
-    }
-    else {
-        targetLikeObj.likes++
-    }
+    const newLikes = targetLikeObj.isliked ? targetLikeObj.likes - 1 : targetLikeObj.likes + 1
 
-    targetLikeObj.isliked = !targetLikeObj.isliked
+    const updatedIsLiked = !targetLikeObj.isliked
 
-    render()
+    update(ref(database, `whispers/${likeId}`),{
+        likes: newLikes,
+        isliked: updatedIsLiked
+    })
 }
 
 function handleRewhisperClick(rewhisperId) {
     const targetRewhisperObj = getWhisperObj(rewhisperId)
 
-    if(targetRewhisperObj.isRewhispered){
-        targetRewhisperObj.rewhispers--
-    } 
-    else {
-        targetRewhisperObj.rewhispers++
-    }
+    const newRewhisper  = targetRewhisperObj.isRewhispered ? targetRewhisperObj.rewhispers - 1 : targetRewhisperObj.rewhispers + 1
 
-    targetRewhisperObj.isRewhispered = !targetRewhisperObj.isRewhispered
+    const updatedIsRewhispered = !targetRewhisperObj.isRewhispered
 
-    render()
+    update(ref(database, `whispers/${rewhisperId}`), {
+        rewhispers: newRewhisper,
+        isRewhispered: updatedIsRewhispered
+    })
 }
 
 function handleReplyClick(replyId){
@@ -134,7 +167,7 @@ function getFeed(){
 
     let feedHtml = ''
 
-    whispersData.forEach(function(whisper){
+    whispersDataLocal.forEach(function(whisper){
 
         let likeIconClass = ''
         let rewhisperedIconClass = ''
@@ -158,7 +191,7 @@ function getFeed(){
             trashIcon = ''
         }
 
-        if(whisper.replies.length > 0){
+        if(whisper.replies && whisper.replies.length > 0){
             whisper.replies.forEach(function(reply){
             repliesHtml += `<div class="whisper-reply">
                             <div class="whisper-inner">
@@ -185,7 +218,7 @@ function getFeed(){
 
                                     <span class="whisper-detail">
                                         <i class="fa-regular fa-comment-dots" data-reply="${whisper.uuid}"></i>
-                                        ${whisper.replies.length}
+                                        ${whisper.replies ? whisper.replies.length : '0'}
                                     </span>
 
                                     <span class="whisper-detail">
